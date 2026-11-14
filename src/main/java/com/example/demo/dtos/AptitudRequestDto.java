@@ -1,5 +1,6 @@
 package com.example.demo.dtos;
 
-public record AptitudRequestDto() {
-
+public record AptitudRequestDto(
+    String nombre
+) {
 }

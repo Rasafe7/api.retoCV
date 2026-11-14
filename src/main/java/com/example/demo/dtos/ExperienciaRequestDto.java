@@ -1,5 +1,7 @@
 package com.example.demo.dtos;
 
-public record ExperienciaRequestDto() {
-
+public record ExperienciaRequestDto(
+    String nombre,
+    String descripcion
+) {
 }
