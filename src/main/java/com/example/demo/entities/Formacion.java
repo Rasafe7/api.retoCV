@@ -52,4 +52,12 @@ public class Formacion {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public Curriculum getCurriculum() {
+        return curriculum;
+    }
+
+    public void setCurriculum(Curriculum curriculum) {
+        this.curriculum = curriculum;
+    }
 }

@@ -35,5 +35,48 @@ public class Curriculum {
     public Curriculum() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Alumno getAlumno() {
+        return alumno;
+    }
+
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
+    }
+
+    public Aptitud getAptitud() {
+        return aptitud;
+    }
+
+    public void setAptitud(Aptitud aptitud) {
+        this.aptitud = aptitud;
+    }
+
+    public Experiencia getExperiencia() {
+        return experiencia;
+    }
+
+    public void setExperiencia(Experiencia experiencia) {
+        this.experiencia = experiencia;
+    }
+
+    public Formacion getFormacion() {
+        return formacion;
+    }
+
+    public void setFormacion(Formacion formacion) {
+        this.formacion = formacion;
+    }
+
     // Aquí añadirás los getters y setters
+
+    
+
 }
