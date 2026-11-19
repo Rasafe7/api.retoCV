@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "alumnos", schema = "basecurriculum")
 public class Alumno {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_alumno", unique = true)
@@ -24,21 +25,16 @@ public class Alumno {
 
     @OneToOne(mappedBy = "alumno", cascade = CascadeType.REMOVE)
     private Curriculum curriculum;
-     
 
     public Alumno() {
-
     }
 
-    public Alumno(String nombre, String apellidos,
-            String dni, String correo) {
+    public Alumno(String nombre, String apellidos, String dni, String correo) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.dni = dni;
         this.correo = correo;
-
     }
-
 
     public Long getIdAlumno() {
         return idAlumno;
@@ -80,6 +76,11 @@ public class Alumno {
         this.correo = correo;
     }
 
+    public Curriculum getCurriculum() {
+        return curriculum;
+    }
 
-
+    public void setCurriculum(Curriculum curriculum) {
+        this.curriculum = curriculum;
+    }
 }

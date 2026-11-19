@@ -4,18 +4,11 @@ import com.example.demo.dtos.CurriculumRequestDto;
 import com.example.demo.dtos.CurriculumResponseDto;
 import com.example.demo.entities.Curriculum;
 import com.example.demo.entities.Alumno;
-import com.example.demo.entities.Aptitud;
-import com.example.demo.entities.Experiencia;
-import com.example.demo.entities.Formacion;
-
+import com.example.demo.entities.Profesor;
 import com.example.demo.exceptions.ResourceNotFoundException;
-
 import com.example.demo.repositories.CurriculumRepository;
 import com.example.demo.repositories.AlumnoRepository;
-import com.example.demo.repositories.AptitudRepository;
-import com.example.demo.repositories.ExperienciaRepository;
-import com.example.demo.repositories.FormacionRepository;
-
+import com.example.demo.repositories.ProfesorRepository;
 import com.example.demo.services.CurriculumService;
 
 import org.springframework.stereotype.Service;
@@ -28,58 +21,44 @@ public class CurriculumServiceImpl implements CurriculumService {
 
     private final CurriculumRepository curriculumRepository;
     private final AlumnoRepository alumnoRepository;
-    private final AptitudRepository aptitudRepository;
-    private final ExperienciaRepository experienciaRepository;
-    private final FormacionRepository formacionRepository;
+    private final ProfesorRepository profesorRepository;
 
     public CurriculumServiceImpl(
             CurriculumRepository curriculumRepository,
             AlumnoRepository alumnoRepository,
-            AptitudRepository aptitudRepository,
-            ExperienciaRepository experienciaRepository,
-            FormacionRepository formacionRepository) {
+            ProfesorRepository profesorRepository) {
 
         this.curriculumRepository = curriculumRepository;
         this.alumnoRepository = alumnoRepository;
-        this.aptitudRepository = aptitudRepository;
-        this.experienciaRepository = experienciaRepository;
-        this.formacionRepository = formacionRepository;
+        this.profesorRepository = profesorRepository;
     }
 
     @Override
     @Transactional
     public CurriculumResponseDto crear(CurriculumRequestDto dto) {
 
+        if ((dto.idAlumno() == null && dto.idProfesor() == null)
+                || (dto.idAlumno() != null && dto.idProfesor() != null)) {
+            throw new IllegalArgumentException(
+                    "El currículum debe pertenecer a un alumno o a un profesor, pero no a ambos.");
+        }
+
         Curriculum curriculum = new Curriculum();
 
-        Alumno alumno = alumnoRepository.findById(dto.idAlumno())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Alumno no encontrado con ID: " + dto.idAlumno()));
-
-        curriculum.setAlumno(alumno);
-
-        if (dto.idAptitud() != null) {
-            Aptitud aptitud = aptitudRepository.findById(dto.idAptitud())
+        if (dto.idAlumno() != null) {
+            Alumno alumno = alumnoRepository.findById(dto.idAlumno())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Aptitud no encontrada con ID: " + dto.idAptitud()));
+                            "Alumno no encontrado con ID: " + dto.idAlumno()));
 
-            curriculum.setAptitud(aptitud);
+            curriculum.setAlumno(alumno);
         }
 
-        if (dto.idExperiencia() != null) {
-            Experiencia experiencia = experienciaRepository.findById(dto.idExperiencia())
+        if (dto.idProfesor() != null) {
+            Profesor profesor = profesorRepository.findById(dto.idProfesor())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Experiencia no encontrada con ID: " + dto.idExperiencia()));
+                            "Profesor no encontrado con ID: " + dto.idProfesor()));
 
-            curriculum.setExperiencia(experiencia);
-        }
-
-        if (dto.idFormacion() != null) {
-            Formacion formacion = formacionRepository.findById(dto.idFormacion())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Formación no encontrada con ID: " + dto.idFormacion()));
-
-            curriculum.setFormacion(formacion);
+            curriculum.setProfesor(profesor);
         }
 
         curriculum = curriculumRepository.save(curriculum);
@@ -112,39 +91,34 @@ public class CurriculumServiceImpl implements CurriculumService {
     @Transactional
     public CurriculumResponseDto actualizar(Long id, CurriculumRequestDto dto) {
 
+        if ((dto.idAlumno() == null && dto.idProfesor() == null)
+                || (dto.idAlumno() != null && dto.idProfesor() != null)) {
+            throw new IllegalArgumentException(
+                    "El currículum debe pertenecer a un alumno o a un profesor, pero no a ambos.");
+        }
+
         Curriculum curriculum = curriculumRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Currículum no encontrado con ID: " + id));
 
-        Alumno alumno = alumnoRepository.findById(dto.idAlumno())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Alumno no encontrado con ID: " + dto.idAlumno()));
+        curriculum.setAlumno(null);
+        curriculum.setProfesor(null);
 
-        curriculum.setAlumno(alumno);
-
-        Aptitud aptitud = null;
-        if (dto.idAptitud() != null) {
-            aptitud = aptitudRepository.findById(dto.idAptitud())
+        if (dto.idAlumno() != null) {
+            Alumno alumno = alumnoRepository.findById(dto.idAlumno())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Aptitud no encontrada con ID: " + dto.idAptitud()));
-        }
-        curriculum.setAptitud(aptitud);
+                            "Alumno no encontrado con ID: " + dto.idAlumno()));
 
-        Experiencia experiencia = null;
-        if (dto.idExperiencia() != null) {
-            experiencia = experienciaRepository.findById(dto.idExperiencia())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Experiencia no encontrada con ID: " + dto.idExperiencia()));
+            curriculum.setAlumno(alumno);
         }
-        curriculum.setExperiencia(experiencia);
 
-        Formacion formacion = null;
-        if (dto.idFormacion() != null) {
-            formacion = formacionRepository.findById(dto.idFormacion())
+        if (dto.idProfesor() != null) {
+            Profesor profesor = profesorRepository.findById(dto.idProfesor())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Formación no encontrada con ID: " + dto.idFormacion()));
+                            "Profesor no encontrado con ID: " + dto.idProfesor()));
+
+            curriculum.setProfesor(profesor);
         }
-        curriculum.setFormacion(formacion);
 
         curriculum = curriculumRepository.save(curriculum);
 
@@ -166,13 +140,10 @@ public class CurriculumServiceImpl implements CurriculumService {
 
         return new CurriculumResponseDto(
                 curriculum.getId(),
-                curriculum.getAlumno().getIdAlumno(),
-                curriculum.getAptitud() != null
-                        ? curriculum.getAptitud().getId() : null,
-                curriculum.getExperiencia() != null
-                        ? curriculum.getExperiencia().getIdExperiencia() : null,
-                curriculum.getFormacion() != null
-                        ? curriculum.getFormacion().getIdFormacion() : null
+                curriculum.getAlumno() != null
+                        ? curriculum.getAlumno().getIdAlumno() : null,
+                curriculum.getProfesor() != null
+                        ? curriculum.getProfesor().getIdProfesor() : null
         );
     }
 }

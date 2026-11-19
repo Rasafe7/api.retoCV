@@ -3,6 +3,7 @@ package com.example.demo.services.impl;
 import com.example.demo.dtos.ExperienciaRequestDto;
 import com.example.demo.dtos.ExperienciaResponseDto;
 import com.example.demo.entities.Experiencia;
+import com.example.demo.entities.Curriculum;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.repositories.ExperienciaRepository;
 import com.example.demo.repositories.CurriculumRepository;
@@ -34,6 +35,14 @@ public class ExperienciaServiceImpl implements ExperienciaService {
 
         experiencia.setNombre(dto.nombre());
         experiencia.setDescripcion(dto.descripcion());
+
+        if (dto.idCurriculum() != null) {
+            Curriculum curriculum = curriculumRepository.findById(dto.idCurriculum())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Currículum no encontrado con ID: " + dto.idCurriculum()));
+
+            experiencia.setCurriculum(curriculum);
+        }
 
         experiencia = experienciaRepository.save(experiencia);
 
@@ -72,24 +81,28 @@ public class ExperienciaServiceImpl implements ExperienciaService {
         experiencia.setNombre(dto.nombre());
         experiencia.setDescripcion(dto.descripcion());
 
+        if (dto.idCurriculum() != null) {
+            Curriculum curriculum = curriculumRepository.findById(dto.idCurriculum())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Currículum no encontrado con ID: " + dto.idCurriculum()));
+
+            experiencia.setCurriculum(curriculum);
+        } else {
+            experiencia.setCurriculum(null);
+        }
+
         experiencia = experienciaRepository.save(experiencia);
 
         return mapToResponseDto(experiencia);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void eliminar(Long id) {
 
         Experiencia experiencia = experienciaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Experiencia no encontrada con ID: " + id));
-
-        if (experiencia.getCurriculum() != null) {
-            var curriculum = experiencia.getCurriculum();
-            curriculum.setExperiencia(null);
-            curriculumRepository.save(curriculum);
-        }
 
         experienciaRepository.delete(experiencia);
     }

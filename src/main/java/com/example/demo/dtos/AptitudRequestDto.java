@@ -1,6 +1,7 @@
 package com.example.demo.dtos;
 
 public record AptitudRequestDto(
-    String nombre
+    String nombre,
+    Long idCurriculum
 ) {
 }

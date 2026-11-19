@@ -3,6 +3,7 @@ package com.example.demo.services.impl;
 import com.example.demo.dtos.AptitudRequestDto;
 import com.example.demo.dtos.AptitudResponseDto;
 import com.example.demo.entities.Aptitud;
+import com.example.demo.entities.Curriculum;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.repositories.AptitudRepository;
 import com.example.demo.repositories.CurriculumRepository;
@@ -31,8 +32,15 @@ public class AptitudServiceImpl implements AptitudService {
     public AptitudResponseDto crear(AptitudRequestDto dto) {
 
         Aptitud aptitud = new Aptitud();
-
         aptitud.setNombre(dto.nombre());
+
+        if (dto.idCurriculum() != null) {
+            Curriculum curriculum = curriculumRepository.findById(dto.idCurriculum())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Currículum no encontrado con ID: " + dto.idCurriculum()));
+
+            aptitud.setCurriculum(curriculum);
+        }
 
         aptitud = aptitudRepository.save(aptitud);
 
@@ -70,6 +78,16 @@ public class AptitudServiceImpl implements AptitudService {
 
         aptitud.setNombre(dto.nombre());
 
+        if (dto.idCurriculum() != null) {
+            Curriculum curriculum = curriculumRepository.findById(dto.idCurriculum())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Currículum no encontrado con ID: " + dto.idCurriculum()));
+
+            aptitud.setCurriculum(curriculum);
+        } else {
+            aptitud.setCurriculum(null);
+        }
+
         aptitud = aptitudRepository.save(aptitud);
 
         return mapToResponseDto(aptitud);
@@ -82,12 +100,6 @@ public class AptitudServiceImpl implements AptitudService {
         Aptitud aptitud = aptitudRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Aptitud no encontrada con ID: " + id));
-
-        if (aptitud.getCurriculum() != null) {
-            var curriculum = aptitud.getCurriculum();
-            curriculum.setAptitud(null);
-            curriculumRepository.save(curriculum);
-        }
 
         aptitudRepository.delete(aptitud);
     }

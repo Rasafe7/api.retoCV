@@ -3,6 +3,7 @@ package com.example.demo.services.impl;
 import com.example.demo.dtos.FormacionRequestDto;
 import com.example.demo.dtos.FormacionResponseDto;
 import com.example.demo.entities.Formacion;
+import com.example.demo.entities.Curriculum;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.repositories.FormacionRepository;
 import com.example.demo.repositories.CurriculumRepository;
@@ -34,6 +35,14 @@ public class FormacionServiceImpl implements FormacionService {
 
         formacion.setNombre(dto.nombre());
         formacion.setDescripcion(dto.descripcion());
+
+        if (dto.idCurriculum() != null) {
+            Curriculum curriculum = curriculumRepository.findById(dto.idCurriculum())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Currículum no encontrado con ID: " + dto.idCurriculum()));
+
+            formacion.setCurriculum(curriculum);
+        }
 
         formacion = formacionRepository.save(formacion);
 
@@ -72,6 +81,16 @@ public class FormacionServiceImpl implements FormacionService {
         formacion.setNombre(dto.nombre());
         formacion.setDescripcion(dto.descripcion());
 
+        if (dto.idCurriculum() != null) {
+            Curriculum curriculum = curriculumRepository.findById(dto.idCurriculum())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Currículum no encontrado con ID: " + dto.idCurriculum()));
+
+            formacion.setCurriculum(curriculum);
+        } else {
+            formacion.setCurriculum(null);
+        }
+
         formacion = formacionRepository.save(formacion);
 
         return mapToResponseDto(formacion);
@@ -84,12 +103,6 @@ public class FormacionServiceImpl implements FormacionService {
         Formacion formacion = formacionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Formación no encontrada con ID: " + id));
-
-        if (formacion.getCurriculum() != null) {
-            var curriculum = formacion.getCurriculum();
-            curriculum.setFormacion(null);
-            curriculumRepository.save(curriculum);
-        }
 
         formacionRepository.delete(formacion);
     }
