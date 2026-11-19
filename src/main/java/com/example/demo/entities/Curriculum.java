@@ -1,7 +1,7 @@
-
 package com.example.demo.entities;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "curriculums", schema = "basecurriculum")
@@ -12,25 +12,22 @@ public class Curriculum {
     @Column(name = "id_curriculum", nullable = false)
     private Long id;
 
-    // Relación con Alumno
     @OneToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_alumno", referencedColumnName = "id_alumno", nullable = false, foreignKey = @ForeignKey(name = "fk_id_alumno"))
+    @JoinColumn(name = "id_alumno", referencedColumnName = "id_alumno", foreignKey = @ForeignKey(name = "fk_id_alumno"), unique = true)
     private Alumno alumno;
 
-    // Relación con Aptitud
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_aptitud", referencedColumnName = "id_aptitud", nullable = true, foreignKey = @ForeignKey(name = "fk_id_aptitud"))
-    private Aptitud aptitud;
+    @OneToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_profesor", referencedColumnName = "id_profesor", foreignKey = @ForeignKey(name = "fk_id_profesor"), unique = true)
+    private Profesor profesor;
 
-    // Relación con Experiencia
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_experiencia", referencedColumnName = "id_experiencia", nullable = true, foreignKey = @ForeignKey(name = "fk_id_experiencia"))
-    private Experiencia experiencia;
+    @OneToMany(mappedBy = "curriculum", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Aptitud> aptitudes;
 
-    // Relación con Formacion
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_formacion", referencedColumnName = "id_formacion", nullable = true, foreignKey = @ForeignKey(name = "fk_id_formacion"))
-    private Formacion formacion;
+    @OneToMany(mappedBy = "curriculum", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Experiencia> experiencias;
+
+    @OneToMany(mappedBy = "curriculum", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Formacion> formaciones;
 
     public Curriculum() {
     }
@@ -51,32 +48,35 @@ public class Curriculum {
         this.alumno = alumno;
     }
 
-    public Aptitud getAptitud() {
-        return aptitud;
+    public Profesor getProfesor() {
+        return profesor;
     }
 
-    public void setAptitud(Aptitud aptitud) {
-        this.aptitud = aptitud;
+    public void setProfesor(Profesor profesor) {
+        this.profesor = profesor;
     }
 
-    public Experiencia getExperiencia() {
-        return experiencia;
+    public List<Aptitud> getAptitudes() {
+        return aptitudes;
     }
 
-    public void setExperiencia(Experiencia experiencia) {
-        this.experiencia = experiencia;
+    public void setAptitudes(List<Aptitud> aptitudes) {
+        this.aptitudes = aptitudes;
     }
 
-    public Formacion getFormacion() {
-        return formacion;
+    public List<Experiencia> getExperiencias() {
+        return experiencias;
     }
 
-    public void setFormacion(Formacion formacion) {
-        this.formacion = formacion;
+    public void setExperiencias(List<Experiencia> experiencias) {
+        this.experiencias = experiencias;
     }
 
-    // Aquí añadirás los getters y setters
+    public List<Formacion> getFormaciones() {
+        return formaciones;
+    }
 
-    
-
+    public void setFormaciones(List<Formacion> formaciones) {
+        this.formaciones = formaciones;
+    }
 }

@@ -1,4 +1,3 @@
-
 package com.example.demo.entities;
 
 import jakarta.persistence.*;
@@ -18,7 +17,8 @@ public class Experiencia {
     @Column(name = "descripcion", nullable = false, length = 255)
     private String descripcion;
 
-    @OneToOne(mappedBy = "experiencia")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_curriculum")
     private Curriculum curriculum;
 
     public Experiencia() {
